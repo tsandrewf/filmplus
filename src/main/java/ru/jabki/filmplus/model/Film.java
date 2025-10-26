@@ -37,7 +37,7 @@ public class Film {
         return this.releaseDate;
     }
 
-    public long getDuration() {
+    public Long getDuration() {
         return this.duration;
     }
 

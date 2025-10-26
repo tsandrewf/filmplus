@@ -3,8 +3,7 @@ package ru.jabki.filmplus.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.jabki.filmplus.exception.FilmException;
-import ru.jabki.filmplus.exception.UserException;
+import ru.jabki.filmplus.exception.*;
 import ru.jabki.filmplus.model.ApiError;
 
 @RestControllerAdvice
@@ -28,6 +27,50 @@ public class ExceptionController {
                         new ApiError(
                                 false,
                                 filmException.getMessage()
+                        )
+                );
+    }
+
+    @ExceptionHandler(LikeException.class)
+    public ResponseEntity<ApiError> handleFilmError(final LikeException likeException) {
+        return ResponseEntity.badRequest()
+                .body(
+                        new ApiError(
+                                false,
+                                likeException.getMessage()
+                        )
+                );
+    }
+
+    @ExceptionHandler(ReviewException.class)
+    public ResponseEntity<ApiError> handleFilmError(final ReviewException reviewException) {
+        return ResponseEntity.badRequest()
+                .body(
+                        new ApiError(
+                                false,
+                                reviewException.getMessage()
+                        )
+                );
+    }
+
+    @ExceptionHandler(FriendException.class)
+    public ResponseEntity<ApiError> handleFilmError(final FriendException friendException) {
+        return ResponseEntity.badRequest()
+                .body(
+                        new ApiError(
+                                false,
+                                friendException.getMessage()
+                        )
+                );
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ApiError> handleUserError(final UserNotFoundException userNotFoundException) {
+        return ResponseEntity.badRequest()
+                .body(
+                        new ApiError(
+                                false,
+                                userNotFoundException.getMessage()
                         )
                 );
     }

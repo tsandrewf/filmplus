@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 import ru.jabki.filmplus.exception.UserException;
+import ru.jabki.filmplus.exception.UserNotFoundException;
 import ru.jabki.filmplus.model.User;
 
 @Service
@@ -28,7 +29,7 @@ public class UserService {
                 .findFirst()
                 .orElse(null);
         if (user == null) {
-            throw new UserException("Пользователь не найден");
+            throw new UserNotFoundException();
         }
         return user;
     }
