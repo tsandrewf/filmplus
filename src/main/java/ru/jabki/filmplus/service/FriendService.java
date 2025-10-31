@@ -13,12 +13,15 @@ public class FriendService {
 
     private static final Set<Friend> friends = new HashSet<>();
 
+
+    private UserService userService = new UserService();
+
     public Friend create(final Friend friend) {
-        Long userId = (new UserService()).getById(friend.getUserId()).getId();
+        Long userId = userService.getById(friend.getUserId()).getId();
 
         Long friendId;
         try {
-            friendId = (new UserService()).getById(friend.getFriendId()).getId();
+            friendId = userService.getById(friend.getFriendId()).getId();
         } catch (UserNotFoundException ex) {
             throw new FriendException("Друг не найден");
         }
@@ -40,14 +43,10 @@ public class FriendService {
     }
 
     public Friend getById(final long id) {
-        final Friend friend = friends.stream()
+        return friends.stream()
                 .filter(u -> u.getId() == id)
                 .findFirst()
-                .orElse(null);
-        if (friend == null) {
-            throw new FriendException("Друг не найден");
-        }
-        return friend;
+                .orElseThrow(() -> new FriendException("Друг не найден"));
     }
 
     public Friend getByUserIdAndFriendId(final long userId, final long friendId) {

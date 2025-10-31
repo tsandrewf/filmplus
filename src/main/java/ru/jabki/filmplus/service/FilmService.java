@@ -3,7 +3,6 @@ package ru.jabki.filmplus.service;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ru.jabki.filmplus.exception.FilmException;
-import ru.jabki.filmplus.exception.UserException;
 import ru.jabki.filmplus.model.Film;
 import ru.jabki.filmplus.model.Genre;
 
@@ -25,14 +24,10 @@ public class FilmService {
     }
 
     public Film getById(Long id) {
-        final Film film = films.stream()
+        return films.stream()
                 .filter(f -> f.getId() == id)
                 .findFirst()
-                .orElse(null);
-        if (film == null) {
-            throw new UserException("Фильм не найден");
-        }
-        return film;
+                .orElseThrow(() -> new FilmException("Фильм не найден"));
     }
 
     public Film update(final Film film) {

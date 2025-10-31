@@ -21,14 +21,11 @@ public class ReviewService {
     }
 
     public Review getById(final long id) {
-        final Review review = reviews.stream()
+
+        return reviews.stream()
                 .filter(u -> u.getId() == id)
                 .findFirst()
-                .orElse(null);
-        if (review == null) {
-            throw new ReviewException("Отзыв не найден");
-        }
-        return review;
+                .orElseThrow(() -> new ReviewException("Отзыв не найден"));
     }
 
     public Review update(final Review review) {

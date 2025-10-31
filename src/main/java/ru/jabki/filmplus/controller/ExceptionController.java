@@ -3,7 +3,12 @@ package ru.jabki.filmplus.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.jabki.filmplus.exception.*;
+import ru.jabki.filmplus.exception.FilmException;
+import ru.jabki.filmplus.exception.FriendException;
+import ru.jabki.filmplus.exception.LikeException;
+import ru.jabki.filmplus.exception.ReviewException;
+import ru.jabki.filmplus.exception.UserException;
+import ru.jabki.filmplus.exception.UserNotFoundException;
 import ru.jabki.filmplus.model.ApiError;
 
 @RestControllerAdvice

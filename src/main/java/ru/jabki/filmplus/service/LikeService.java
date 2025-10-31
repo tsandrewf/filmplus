@@ -11,9 +11,11 @@ import ru.jabki.filmplus.model.Like;
 public class LikeService {
 
     private static final Set<Like> likes = new HashSet<>();
+    FilmService filmService = new FilmService();
+    UserService userService = new UserService();
 
     public Like create(final Like like) {
-        Like existLike = getByFilmIdAndUserId((new FilmService()).getById(like.getFilmId()).getId(), (new UserService()).getById(like.getUserId()).getId());
+        Like existLike = getByFilmIdAndUserId(filmService.getById(like.getFilmId()).getId(), userService.getById(like.getUserId()).getId());
         if (existLike != null) {
             return existLike;
         }
@@ -27,21 +29,16 @@ public class LikeService {
     }
 
     public Like getById(final long id) {
-        final Like like = likes.stream()
+        return likes.stream()
                 .filter(u -> u.getId() == id)
                 .findFirst()
-                .orElse(null);
-        if (like == null) {
-            throw new LikeException("Лайк не найден");
-        }
-        return like;
+                .orElseThrow(() -> new LikeException("Лайк не найден"));
     }
 
     public Like getByFilmIdAndUserId(final long filmId, final long userId) {
-        final Like like = likes.stream()
+        return likes.stream()
                 .filter(l -> (l.getFilmId() == filmId) && (l.getUserId() == userId))
                 .findFirst()
                 .orElse(null);
-        return like;
     }
 }

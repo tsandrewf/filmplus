@@ -24,14 +24,10 @@ public class UserService {
     }
 
     public User getById(final long id) {
-        final User user = users.stream()
+        return users.stream()
                 .filter(u -> u.getId() == id)
                 .findFirst()
-                .orElse(null);
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
-        return user;
+                .orElseThrow(UserNotFoundException::new);
     }
 
     public User update(final User user) {
