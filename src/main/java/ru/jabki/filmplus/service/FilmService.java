@@ -1,35 +1,39 @@
 package ru.jabki.filmplus.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import ru.jabki.filmplus.exception.FilmException;
 import ru.jabki.filmplus.model.Film;
 import ru.jabki.filmplus.model.Genre;
+import ru.jabki.filmplus.repository.FilmRepository;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class FilmService {
 
-    private static final Set<Film> films = new HashSet<>();
+    private final FilmRepository filmRepository;
 
+    @Transactional(rollbackFor = Exception.class)
     public Film create(final Film film) {
         validate(film);
-        film.setId((long)(films.size() + 1));
-        films.add(film);
+        return filmRepository.insert(film);
+    }
+
+    @Transactional(readOnly = true)
+    public Film getById(Long id) {
+        final Film film = filmRepository.getById(id);
+        if (film == null) {
+            throw new FilmException("Фильм не найден");
+        }
         return film;
     }
 
-    public Film getById(Long id) {
-        return films.stream()
-                .filter(f -> f.getId() == id)
-                .findFirst()
-                .orElseThrow(() -> new FilmException("Фильм не найден"));
-    }
-
+    @Transactional(rollbackFor = Exception.class)
     public Film update(final Film film) {
         validate(film);
         final Film existFilm = getById(film.getId());
@@ -38,11 +42,13 @@ public class FilmService {
         existFilm.setReleaseDate(film.getReleaseDate());
         existFilm.setDuration(film.getDuration());
         existFilm.setGenres(film.getGenres());
+        filmRepository.update(existFilm);
         return existFilm;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void delete(final Long id) {
-        films.remove(getById(id));
+        filmRepository.delete(id);
     }
 
     private void validate(final Film film) {
@@ -70,11 +76,6 @@ public class FilmService {
     }
 
     public Set<Film> search(String name, String description, Set<Genre> genres) {
-        return films.stream()
-                .filter(f -> (!StringUtils.hasText(name) || f.getName().toLowerCase().contains(name.toLowerCase()))
-                             && (!StringUtils.hasText(description) || f.getDescription().toLowerCase().contains(description.toLowerCase()))
-                             && (genres == null || f.getGenres().equals(genres))
-                       )
-                .collect(Collectors.toSet());
+        return filmRepository.search(name, description, genres);
     }
 }

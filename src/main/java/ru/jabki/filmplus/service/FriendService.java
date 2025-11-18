@@ -1,21 +1,23 @@
 package ru.jabki.filmplus.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.jabki.filmplus.exception.FriendException;
 import ru.jabki.filmplus.exception.UserNotFoundException;
 import ru.jabki.filmplus.model.Friend;
+import ru.jabki.filmplus.repository.FriendRepository;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Objects;
 
 @Service
+@AllArgsConstructor
 public class FriendService {
 
-    private static final Set<Friend> friends = new HashSet<>();
+    private final FriendRepository friendRepository;
+    private final UserService userService;
 
-
-    private UserService userService = new UserService();
-
+    @Transactional(rollbackFor = Exception.class)
     public Friend create(final Friend friend) {
         Long userId = userService.getById(friend.getUserId()).getId();
 
@@ -26,33 +28,20 @@ public class FriendService {
             throw new FriendException("Друг не найден");
         }
 
-        if (userId == friendId) {
-            throw new FriendException("Пользователь сам себе друг (за очень редким исключением)");
+        if (Objects.equals(userId, friendId)) {
+            throw new FriendException("Пользователь обычно сам себе друг (за очень редким исключением)");
         }
-        Friend existFriend = getByUserIdAndFriendId(userId, friendId);
-        if (existFriend != null) {
-            return existFriend;
-        }
-        friend.setId((long)(friends.size() + 1));
-        friends.add(friend);
-        return friend;
+
+        return friendRepository.insert(friend);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void delete(final Long id) {
-        friends.remove(getById(id));
+        friendRepository.delete(id);
     }
 
+    @Transactional(readOnly = true)
     public Friend getById(final long id) {
-        return friends.stream()
-                .filter(u -> u.getId() == id)
-                .findFirst()
-                .orElseThrow(() -> new FriendException("Друг не найден"));
-    }
-
-    public Friend getByUserIdAndFriendId(final long userId, final long friendId) {
-        return friends.stream()
-                .filter(f -> (f.getUserId() == userId) && (f.getFriendId() == friendId))
-                .findFirst()
-                .orElse(null);
+        return friendRepository.getById(id);
     }
 }

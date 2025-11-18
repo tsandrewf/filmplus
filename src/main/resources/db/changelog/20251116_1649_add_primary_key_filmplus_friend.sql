@@ -1,0 +1,1 @@
+ALTER TABLE filmplus.friend ADD COLUMN id SERIAL PRIMARY KEY;
