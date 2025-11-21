@@ -6,6 +6,7 @@ import ru.jabki.filmplus.model.Film;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 
 @Component
 public class FilmMapper implements RowMapper<Film> {
@@ -16,7 +17,7 @@ public class FilmMapper implements RowMapper<Film> {
                 .id(rs.getLong("id"))
                 .name(rs.getString("name"))
                 .description(rs.getString("description"))
-                .releaseDate(new java.sql.Date(rs.getDate("releaseDate").getTime()).toLocalDate())
+                .releaseDate(rs.getObject("releaseDate", LocalDate.class))
                 .duration(rs.getLong("duration"))
                 .build();
     }

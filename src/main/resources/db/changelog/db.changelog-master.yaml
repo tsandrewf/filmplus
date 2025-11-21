@@ -62,3 +62,31 @@ databaseChangeLog:
         - sqlFile:
             path: 20251116_1937_init_review_table.sql
             relativeToChangelogFile: true
+  - changeSet:
+      id: add_column_genge
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251121_1620_add_column_genre.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: update_genre_to_genge
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251121_1625_update_genre_to_genge.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: add_constraint_film_genre_genre_check
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251121_1635_add_constraint_film_genre_genre_check.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: drop_column_genge
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251121_1642_drop_column_genge.sql
+            relativeToChangelogFile: true

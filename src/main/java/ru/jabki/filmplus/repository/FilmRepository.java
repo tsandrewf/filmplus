@@ -36,7 +36,7 @@ public class FilmRepository {
 
     private static final String GET_BY_ID = """
             SELECT *
-                 , (SELECT array_agg(fg.genge)
+                 , (SELECT array_agg(fg.genre)
                     FROM filmplus.film_genre fg
                     WHERE fg.film_id = f.id
                    ) as genres
@@ -54,7 +54,7 @@ public class FilmRepository {
             """;
 
             if (film.getGenres() != null && !film.getGenres().isEmpty()) {
-                filmGenreSetSql = filmGenreSetSql.concat(" AND genge NOT IN (");
+                filmGenreSetSql = filmGenreSetSql.concat(" AND genre NOT IN (");
 
                 boolean needComma = false;
                 for (Genre genre : film.getGenres()) {
@@ -76,7 +76,7 @@ public class FilmRepository {
 
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             filmGenreSetSql = filmGenreSetSql.concat("""
-                INSERT INTO filmplus.film_genre (film_id, genge)
+                INSERT INTO filmplus.film_genre (film_id, genre)
                 VALUES
                 """);
 
@@ -91,7 +91,7 @@ public class FilmRepository {
             }
 
             if (isUpdate) {
-                filmGenreSetSql = filmGenreSetSql.concat(" ON CONFLICT (film_id, genge) DO NOTHING");
+                filmGenreSetSql = filmGenreSetSql.concat(" ON CONFLICT (film_id, genre) DO NOTHING");
             }
         }
 
@@ -102,7 +102,7 @@ public class FilmRepository {
         String prefix = "WHERE";
         String searchSql = """
             SELECT *
-                 , (SELECT array_agg(fg.genge)
+                 , (SELECT array_agg(fg.genre)
                     FROM filmplus.film_genre fg
                     WHERE fg.film_id = f.id
                    ) as genres
@@ -119,7 +119,7 @@ public class FilmRepository {
         if (genres != null && !genres.isEmpty()) {
             searchSql = searchSql.concat(" " + prefix + " (SELECT COUNT(1) FROM filmplus.film_genre fg WHERE fg.film_id = f.id");
 
-            searchSql = searchSql.concat(" AND fg.genge IN (");
+            searchSql = searchSql.concat(" AND fg.genre IN (");
             boolean needComma = false;
             for (Genre genre : genres) {
                 if (needComma) {
@@ -144,7 +144,9 @@ public class FilmRepository {
     public Film insert(final Film film) {
         Film newFilm = jdbcTemplate.queryForObject(INSERT, filmToSql(film), filmMapper);
 
-        assert newFilm != null;
+        if (newFilm == null) {
+            return null;
+        }
 
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             jdbcTemplate.update(getFilmGenreSetSql(film, false), new MapSqlParameterSource("id", newFilm.getId()));
@@ -161,9 +163,7 @@ public class FilmRepository {
     }
 
     public void delete(final Long id) {
-        try {
-            jdbcTemplate.update(DELETE, new MapSqlParameterSource("id", id));
-        } catch (Exception e) {
+        if (jdbcTemplate.update(DELETE, new MapSqlParameterSource("id", id)) == 0) {
             throw new BadRequestException(String.format("Фильм с id %d не найден", id));
         }
     }
