@@ -8,6 +8,7 @@ import ru.jabki.filmplus.exception.BadRequestException;
 import ru.jabki.filmplus.model.Film;
 import ru.jabki.filmplus.model.Genre;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -91,7 +92,8 @@ public class FilmRepository {
             }
 
             if (isUpdate) {
-                filmGenreSetSql = filmGenreSetSql.concat(" ON CONFLICT (film_id, genre) DO NOTHING");
+                //filmGenreSetSql = filmGenreSetSql.concat(" ON CONFLICT (film_id, genre) DO NOTHING");
+                filmGenreSetSql = filmGenreSetSql.concat(" RETURNING genre ON CONFLICT (film_id, genre) DO NOTHING");
             }
         }
 
@@ -149,10 +151,14 @@ public class FilmRepository {
         }
 
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
-            jdbcTemplate.update(getFilmGenreSetSql(film, false), new MapSqlParameterSource("id", newFilm.getId()));
+            Set<Genre> genres = new HashSet<>();
+            for (Integer genre_id : Collections.singletonList(jdbcTemplate.update(getFilmGenreSetSql(film, false), new MapSqlParameterSource("id", newFilm.getId())))) {
+                genres.add(Genre.getById(genre_id));
+            }
+            newFilm.setGenres(genres);
         }
 
-        return getById(newFilm.getId());
+        return newFilm;
     }
 
     public Film update(final Film film) {
