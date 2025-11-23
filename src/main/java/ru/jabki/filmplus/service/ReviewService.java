@@ -1,42 +1,40 @@
 package ru.jabki.filmplus.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import ru.jabki.filmplus.exception.ReviewException;
 import ru.jabki.filmplus.model.Review;
-
-import java.util.HashSet;
-import java.util.Set;
+import ru.jabki.filmplus.repository.ReviewRepository;
 
 @Service
+@AllArgsConstructor
 public class ReviewService {
 
-    private static final Set<Review> reviews = new HashSet<>();
+    private final FilmService filmService;
+    private final ReviewRepository reviewRepository;
 
+    @Transactional(rollbackFor = Exception.class)
     public Review create(final Review review) {
         validate(review);
-        review.setId((long)(reviews.size() + 1));
-        reviews.add(review);
-        return review;
+        return reviewRepository.insert(review);
     }
 
+    @Transactional(readOnly = true)
     public Review getById(final long id) {
-
-        return reviews.stream()
-                .filter(u -> u.getId() == id)
-                .findFirst()
-                .orElseThrow(() -> new ReviewException("Отзыв не найден"));
+        return reviewRepository.getById(id);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Review update(final Review review) {
         validate(review);
-        final Review existReview = getById(review.getId());
-        existReview.setContent(review.getContent());
-        return existReview;
+        return reviewRepository.update(review);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void delete(final Long id) {
-        reviews.remove(getById(id));
+        reviewRepository.delete(id);
     }
 
     private void validate(final Review review) {
@@ -46,7 +44,6 @@ public class ReviewService {
         if (!StringUtils.hasText(review.getContent())) {
             throw new ReviewException("Содержимое отзыва не задано");
         }
-        (new FilmService()).getById(review.getFilmId());
-        (new UserService()).getById(review.getUserId());
+        filmService.getById(review.getFilmId());
     }
 }

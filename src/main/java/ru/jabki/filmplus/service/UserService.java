@@ -1,35 +1,39 @@
 package ru.jabki.filmplus.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import ru.jabki.filmplus.exception.UserException;
 import ru.jabki.filmplus.exception.UserNotFoundException;
 import ru.jabki.filmplus.model.User;
+import ru.jabki.filmplus.repository.UserRepository;
 
 @Service
+@AllArgsConstructor
 public class UserService {
 
-    private static final Set<User> users = new HashSet<>();
+    private final UserRepository userRepository;
 
+    @Transactional(rollbackFor = Exception.class)
     public User create(final User user) {
         validate(user);
-        user.setId((long)(users.size() + 1));
-        users.add(user);
+        return userRepository.insert(user);
+    }
+
+    @Transactional(readOnly = true)
+    public User getById(final long id) {
+        final User user = userRepository.getById(id);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
         return user;
     }
 
-    public User getById(final long id) {
-        return users.stream()
-                .filter(u -> u.getId() == id)
-                .findFirst()
-                .orElseThrow(UserNotFoundException::new);
-    }
-
+    @Transactional(rollbackFor = Exception.class)
     public User update(final User user) {
         validate(user);
         final User existUser = getById(user.getId());
@@ -37,11 +41,13 @@ public class UserService {
         existUser.setEmail(user.getEmail());
         existUser.setLogin(user.getLogin());
         existUser.setBirthday(user.getBirthday());
+        userRepository.update(existUser);
         return existUser;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void delete(final Long id) {
-        users.remove(getById(id));
+        userRepository.delete(id);
     }
 
     private void validate(final User user) {

@@ -3,6 +3,7 @@ package ru.jabki.filmplus.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,15 +17,12 @@ import ru.jabki.filmplus.model.Review;
 import ru.jabki.filmplus.service.ReviewService;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/review")
 @Tag(name = "Отзывы")
 public class ReviewController {
 
     public final ReviewService reviewService;
-
-    public ReviewController(final ReviewService reviewService) {
-        this.reviewService = reviewService;
-    }
 
     @PostMapping
     @Operation(summary = "Создать отзыв")

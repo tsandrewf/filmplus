@@ -1,5 +1,11 @@
 package ru.jabki.filmplus.model;
 
+import lombok.Getter;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@Getter
 public enum Genre {
     ACTION(1),
     ADVENTURE(2),
@@ -20,11 +26,21 @@ public enum Genre {
 
     private final int id;
 
-    public int gatId() {
-        return this.id;
-    }
-
     Genre(int id) {
         this.id = id;
     }
-};
+
+    // https://stackoverflow.com/questions/27484353/gettin-enum-types-may-not-be-instantiated-exception
+    final static Map<Integer, Genre> map = new HashMap<>();
+
+    static {
+        for (Genre genre : Genre.values()) {
+            map.put(genre.id, genre);
+        }
+    }
+
+    public static Genre getById(int id) {
+        return map.get(id);
+    }
+
+}

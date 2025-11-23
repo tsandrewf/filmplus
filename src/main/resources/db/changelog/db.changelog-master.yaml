@@ -1,0 +1,92 @@
+databaseChangeLog:
+  - changeSet:
+      id: init-user-table
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251108_1308_init_user_table.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: init-film-table
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251115_1025_init_film_table.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: init-film-genre-table
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251115_1037_init_film_genre_table.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: init-friend-table
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251116_1316_init_friend_table.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: drop-constraint-filmplus-friend_pk
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251116_1639_drop_constraint_filmplus_friend_pk.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: add-primary-key-filmplus-friend
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251116_1649_add_primary_key_filmplus_friend.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: constraint-user-friend-unique
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251116_1735_constraint_user_friend_unique.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: init-like-table
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251116_1859_init_like_table.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: init-review-table
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251116_1937_init_review_table.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: add_column_genge
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251121_1620_add_column_genre.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: update_genre_to_genge
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251121_1625_update_genre_to_genge.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: add_constraint_film_genre_genre_check
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251121_1635_add_constraint_film_genre_genre_check.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: drop_column_genge
+      author: me
+      changes:
+        - sqlFile:
+            path: 20251121_1642_drop_column_genge.sql
+            relativeToChangelogFile: true
